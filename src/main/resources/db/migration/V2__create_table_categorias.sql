@@ -1,0 +1,8 @@
+CREATE TABLE tb_categorias
+(
+    id_categoria  BIGSERIAL PRIMARY KEY,
+    nome          VARCHAR(100)             NOT NULL UNIQUE,
+    descricao     VARCHAR(255),
+    criado_em     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
