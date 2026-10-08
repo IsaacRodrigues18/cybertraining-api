@@ -9,7 +9,7 @@ import java.time.OffsetDateTime;
 @Table(name = "tb_categorias")
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @ToString
