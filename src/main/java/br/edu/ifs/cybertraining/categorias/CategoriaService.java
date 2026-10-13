@@ -3,7 +3,9 @@ package br.edu.ifs.cybertraining.categorias;
 import br.edu.ifs.cybertraining.categorias.dto.CategoriaRequestDto;
 import br.edu.ifs.cybertraining.categorias.dto.CategoriaResponseDto;
 import br.edu.ifs.cybertraining.categorias.dto.mapper.CategoriaMapper;
-// imports de exceptions customizadas...
+
+import br.edu.ifs.cybertraining.infra.exceptions.RecursoNaoEncontradoException;
+import br.edu.ifs.cybertraining.infra.exceptions.RegraDeNegocioException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +21,6 @@ public class CategoriaService {
 
     @Transactional
     public CategoriaResponseDto criar(CategoriaRequestDto dto) {
-        // Validação da unicidade que removemos do DTO
         if (repository.existsByNomeIgnoreCase(dto.getNome())) {
             throw new RegraDeNegocioException("Já existe uma categoria cadastrada com o nome: " + dto.getNome());
         }
@@ -49,7 +50,7 @@ public class CategoriaService {
         CategoriaEntity entity = repository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Categoria não encontrada com o ID: " + id));
 
-        // Impede duplicidade ao renomear para um nome que já pertence a outra categoria
+
         if (repository.existsByNomeIgnoreCaseAndIdCategoriaNot(dto.getNome(), id)) {
             throw new RegraDeNegocioException("Já existe outra categoria cadastrada com o nome: " + dto.getNome());
         }
@@ -64,10 +65,9 @@ public class CategoriaService {
     @Transactional
     public void deletar(Long id) {
         if (!repository.existsById(id)) {
-            throw new RecursoNaoEncontradoException("Categoria não encontrada com o ID: " + id));
+            throw new RecursoNaoEncontradoException("Categoria não encontrada com o ID: " + id);
         }
 
-        // Regra de segurança: não permitir exclusão se houver cenários vinculados
         if (repository.temCenariosVinculados(id)) {
             throw new RegraDeNegocioException("Não é possível excluir uma categoria que possui cenários/desafios vinculados.");
         }
