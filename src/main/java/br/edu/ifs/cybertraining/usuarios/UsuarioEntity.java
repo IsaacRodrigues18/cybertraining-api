@@ -17,7 +17,7 @@ import java.time.OffsetDateTime;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Builder
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
