@@ -5,6 +5,7 @@ import br.edu.ifs.cybertraining.infra.exceptions.RegraDeNegocioException;
 import br.edu.ifs.cybertraining.usuarios.dto.UsuarioRequestDto;
 import br.edu.ifs.cybertraining.usuarios.dto.UsuarioResponseDto;
 import br.edu.ifs.cybertraining.usuarios.dto.mapper.UsuarioMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,10 +16,14 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper) {
+    public UsuarioService(UsuarioRepository usuarioRepository,
+                          UsuarioMapper usuarioMapper,
+                          PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -28,8 +33,10 @@ public class UsuarioService {
         }
 
         UsuarioEntity entity = usuarioMapper.toEntity(requestDto);
-        UsuarioEntity salvo = usuarioRepository.save(entity);
+        // Criptografa a senha antes de persistir no banco
+        entity.setSenha(passwordEncoder.encode(requestDto.getSenha()));
 
+        UsuarioEntity salvo = usuarioRepository.save(entity);
         return usuarioMapper.toResponseDTO(salvo);
     }
 
@@ -60,7 +67,10 @@ public class UsuarioService {
 
         entity.setNomeUsuario(requestDto.getNomeUsuario());
         entity.setEmail(requestDto.getEmail());
-        entity.setSenha(requestDto.getSenha());
+        // Se a senha for enviada na edição, aplica o hash novamente
+        if (requestDto.getSenha() != null && !requestDto.getSenha().isBlank()) {
+            entity.setSenha(passwordEncoder.encode(requestDto.getSenha()));
+        }
 
         UsuarioEntity atualizado = usuarioRepository.save(entity);
         return usuarioMapper.toResponseDTO(atualizado);

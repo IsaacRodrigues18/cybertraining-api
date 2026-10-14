@@ -3,7 +3,6 @@ package br.edu.ifs.cybertraining.infra.exceptions;
 import java.time.OffsetDateTime;
 
 
-import java.time.OffsetDateTime;
 import java.util.List;
 
 public record ErroRespostaDto(
